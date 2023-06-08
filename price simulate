@@ -10,10 +10,10 @@ sigma_high = 1.0
 dt = T / N
 t = np.linspace(0, T, N+1)
 
-# Stock price simulation
+
 S_low = np.zeros(N+1)
 S_high = np.zeros(N+1)
-S_low[0] = S_high[0] = 200  # Initial stock price
+S_low[0] = S_high[0] = 200  
 
 for i in range(N):
     dW = np.random.normal(0, np.sqrt(dt))
