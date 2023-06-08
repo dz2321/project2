@@ -1,0 +1,32 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+T = 30  
+N = 1000 
+r = 0.05  
+sigma_low = 0.1  
+sigma_high = 1.0  
+
+dt = T / N
+t = np.linspace(0, T, N+1)
+
+# Stock price simulation
+S_low = np.zeros(N+1)
+S_high = np.zeros(N+1)
+S_low[0] = S_high[0] = 200  # Initial stock price
+
+for i in range(N):
+    dW = np.random.normal(0, np.sqrt(dt))
+    S_low[i+1] = S_low[i] + r*S_low[i]*dt + sigma_low*S_low[i]*dW
+    S_high[i+1] = S_high[i] + r*S_high[i]*dt + sigma_high*S_high[i]*dW
+
+
+plt.figure(figsize=(10, 6))
+plt.plot(t, S_low, linestyle='dashed', label='Low Volatility')
+plt.plot(t, S_high, linestyle='solid', label='High Volatility')
+plt.xlabel('Time (Days)')
+plt.ylabel('Stock Price ($)')
+plt.legend()
+plt.title('Simulated Stock Prices with Different Volatilities')
+plt.grid(True)
+plt.show()
