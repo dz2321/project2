@@ -1,0 +1,61 @@
+import numpy as np
+import matplotlib.pyplot as plt
+
+T = 100
+N = 1000
+v = 0.1
+phi = 0.9
+eta = np.sqrt(1)
+
+dt = T / N
+t = np.linspace(0, T, N+1)
+
+x = np.zeros(N+1)
+P = np.zeros(N+1)
+x[0] = np.random.normal(0, eta)
+P[0] = eta**2
+
+log_sigma = np.zeros(N+1)
+true_log_sigma = np.zeros(N+1)
+log_sigma[0] = x[0]
+true_log_sigma[0] = log_sigma[0]
+
+for i in range(1, N+1):
+    x_t_t_minus_1 = v + phi * x[i-1]
+    P_t_t_minus_1 = phi**2 * P[i-1] + eta**2
+
+    mixture_params = [
+        (0.00730, -10.12999, 5.79596),
+        (0.10556, -3.97281, 2.61369),
+        (0.00002, -8.56686, 5.17950),
+        (0.04395, 2.77786, 0.16735),
+        (0.34001, 0.61942, 0.64009),
+        (0.24566, 1.79518, 0.34023),
+        (0.25750, -1.08819, 1.26261)
+    ]
+
+    U = np.random.uniform(0, 1)
+    j = 0
+    q_sum = mixture_params[0][0]
+    while U > q_sum:
+        j += 1
+        q_sum += mixture_params[j][0]
+
+    q, m, s = mixture_params[j]
+    K = P_t_t_minus_1 / (P_t_t_minus_1 + s**2)
+
+    x[i] = x_t_t_minus_1 + K * (np.log(log_sigma[i-1]) - (m + x_t_t_minus_1))
+    P[i] = (1 - K)**2 * P_t_t_minus_1 + (K * s)**2
+
+    log_sigma[i] = x[i]
+    true_log_sigma[i] = (v + phi * x[i-1])
+
+plt.figure(figsize=(10, 6))
+plt.plot(t, log_sigma, label='Estimated Log-volatility')
+plt.plot(t, true_log_sigma, label='True Log-volatility')
+plt.xlabel('Time (Days)')
+plt.ylabel('Log-volatility')
+plt.title('Simulated Log-volatility using Kalman Filter')
+plt.legend()
+plt.grid(True)
+plt.show()
